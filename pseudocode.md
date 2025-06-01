@@ -1,40 +1,44 @@
-Definisikan fungsi objektif f(x) = x^2
+# (Opsional) Set seed agar hasil acak konsisten setiap dijalankan
+set_random_seed(42)
 
-Inisialisasi parameter:
-    jumlah_partikel = 10
-    iterasi_maks = 50
-    batas_bawah = -10
-    batas_atas = 10
-    w = 0.5             // inersia
-    c1 = 1.5            // koefisien kognitif
-    c2 = 1.5            // koefisien sosial
+# Inisialisasi partikel dan parameter
+posisi = [random dalam batas pencarian untuk setiap partikel]
+kecepatan = [0.0 untuk setiap partikel]
+pBest = posisi.copy()
+fitness_pBest = [evaluasi(p) untuk p dalam pBest]
+gBest = pBest dengan fitness terbaik
 
-Inisialisasi:
-    Untuk setiap partikel:
-        - Inisialisasi posisi acak di antara batas_bawah dan batas_atas
-        - Inisialisasi kecepatan awal = 0
-        - Hitung fitness awal (f(x))
-        - Simpan posisi terbaik pribadi (pbest) = posisi awal
+# Iterasi utama algoritma PSO
+for iterasi in range(jumlah_iterasi):
 
-    Tentukan posisi terbaik global (gbest) dari semua pbest
+# Update pBest untuk setiap partikel
+    for i in range(jumlah_partikel):
+        fitness = evaluasi(posisi[i])
+        if fitness < fitness_pBest[i]:
+            pBest[i] = posisi[i]
+            fitness_pBest[i] = fitness
 
-Untuk iterasi = 1 hingga iterasi_maks:
-    Untuk setiap partikel:
-        - Hasilkan dua bilangan acak r1 dan r2 dari [0, 1]
-        - Perbarui kecepatan:
-            v = w * v + c1 * r1 * (pbest - posisi) + c2 * r2 * (gbest - posisi)
-        - Perbarui posisi:
-            posisi = posisi + v
-            Jika posisi < batas_bawah → setel posisi = batas_bawah
-            Jika posisi > batas_atas → setel posisi = batas_atas
-        - Hitung fitness baru f(posisi)
-        - Jika fitness baru < pbest_fitness:
-            Perbarui pbest = posisi sekarang
-            Jika fitness baru < gbest_fitness:
-                Perbarui gbest = posisi sekarang
+# Update gBest dari pBest terbaik
+    gBest = pBest dengan fitness terbaik
 
-    Simpan gbest_fitness ke dalam riwayat iterasi
+# Update kecepatan dan posisi partikel
+    for i in range(jumlah_partikel):
+        r1 = random antara 0 dan 1
+        r2 = random antara 0 dan 1
 
-Setelah selesai:
-    Cetak gbest dan gbest_fitness
-    Plot grafik konvergensi: fitness terbaik vs iterasi
+        kecepatan[i] = (
+            w * kecepatan[i]
+            + c1 * r1 * (pBest[i] - posisi[i])
+            + c2 * r2 * (gBest - posisi[i])
+        )
+
+        posisi[i] += kecepatan[i]
+
+# Clamp posisi agar tetap dalam batas
+        if posisi[i] < batas_min:
+            posisi[i] = batas_min
+        elif posisi[i] > batas_max:
+            posisi[i] = batas_max
+
+# Simpan fitness terbaik saat ini (opsional untuk visualisasi)
+    simpan evaluasi(gBest)
